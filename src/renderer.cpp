@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include <iostream>
-#include <string>
+#include "SDL_ttf.h"
+#include <sstream>
 
 Renderer::Renderer(const std::size_t screen_width,
                    const std::size_t screen_height,
@@ -36,6 +37,69 @@ Renderer::Renderer(const std::size_t screen_width,
 Renderer::~Renderer() {
   SDL_DestroyWindow(sdl_window);
   SDL_Quit();
+}
+
+/// Renders text to a renderer object but does not displays it
+/// param[in] str String to display
+/// param[in] font Font to use
+/// param[in] renderer_ to render text to
+/// param[in] offset Offset at which to display the text
+/// param[in] color Color to display text
+/// returns last height at which text was displayed (to use for next offset)
+int RenderText(const char* str, TTF_Font* font, SDL_Renderer* renderer_, const int offset, const SDL_Color color)
+{
+    SDL_Surface* text = TTF_RenderText_Solid(font, str, color);
+    if(!text)
+    {
+        std::cout << "Failed to render text: " << str << " " << TTF_GetError() << std::endl;
+    }
+    SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer_, text);
+    SDL_Rect dest = { 0, offset, text->w, text->h};
+    SDL_RenderCopy(renderer_, text_texture, nullptr, &dest);
+
+    return text->h;
+}
+
+/// Render the splash screen name
+///
+void Renderer::RenderSplash(const int& max_score, const std::string& player_max_score, const std::string& cur_player)
+{
+    // Clear screen
+    SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
+    SDL_RenderClear(sdl_renderer);
+
+    if(TTF_Init() < 0)
+    {
+        std::cout << "Error initializing SDL TTF: " << TTF_GetError() << "\n";
+    }
+
+    // Load font
+	TTF_Font *font = TTF_OpenFont("../support/font.ttf", 56);
+	if ( !font )
+    {
+        std::cout << "Error loading font: " << TTF_GetError() << "\n";
+	}
+
+    // Set color to black
+    SDL_Color color = { 0xFF, 0xFF, 0xFF };
+
+    // First section of Splash Screen
+    std::stringstream ss;
+    ss << "Max score: " << max_score << " ";
+    std::string tmp_str = ss.str();
+    int offset = RenderText(tmp_str.c_str(), font, sdl_renderer, 0, color);
+    ss.str(std::string());
+    ss << "Player: " << player_max_score;
+    tmp_str = ss.str();
+    offset += RenderText(tmp_str.c_str(), font, sdl_renderer, offset, color);
+
+    // Middle Section
+    offset += RenderText("Insert your name:", font, sdl_renderer, offset, color);
+
+    // End section
+    offset += RenderText("Press enter to continue", font, sdl_renderer, offset, color);
+
+    SDL_RenderPresent(sdl_renderer);
 }
 
 void Renderer::Render(Snake const snake, SDL_Point const &food) {

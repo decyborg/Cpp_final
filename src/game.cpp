@@ -2,12 +2,73 @@
 #include <iostream>
 #include "SDL.h"
 
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+
+namespace
+{
+// Parses the game file to get the max_score so far and the player that got it
+// param[in] filename Name of the game file (with expected format).
+// param[out] max_score Max score stored on the file.
+// param[out] player Name of the player stored in the file.
+// returns true if it succeeds to read the file and data, false otherwise
+bool parse_game_file(const std::string& filename, int& max_score, std::string& player)
+{
+    std::ifstream file(filename);
+    if(!file.is_open())
+    {
+        std::cout << "Couldn't open file " << filename << std::endl;
+        return false;
+    }
+    std::string tmp_str;
+    std::getline(file, tmp_str);
+    std::istringstream str_stream(tmp_str);
+    std::string tmp_name;
+    int tmp_score;
+    if(!(str_stream >> tmp_name >> tmp_score))
+    {
+        std::cout << "Couldn't parse file" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+} // Anonymous namespace
+
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
   PlaceFood();
+}
+
+/// Displays an initial screen to select the name of player
+/// @param[in] controller A reference to the controller object
+/// @param[in] renderer A reference to the renderer object
+void Game::SplashScreen(Controller const &controller, Renderer &renderer)
+{
+
+    // Check if file already exists
+    if(std::filesystem::exists(game_file_))
+    {
+        // Load file if it exists
+        if(!parse_game_file(game_file_, max_score_, player_name_))
+        {
+            std::cout << "Could not open and parse " << game_file_ << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << game_file_ << " doesn't exist, using defaults" << std::endl;
+    }
+
+    // Render max score to date and get current player name
+    std::string tmp_player{};
+    renderer.RenderSplash(max_score_, player_name_, tmp_player);
+    SDL_Delay(10000);
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,
@@ -50,6 +111,26 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   }
 }
 
+void Game::EndGame()
+{
+    // Save current game
+    // Only update if score beats max score
+    if(score > max_score_)
+    {
+        // Overwrite previous score
+        std::ofstream outfile;
+        outfile.open(game_file_, std::ios_base::out | std::ios_base::trunc);
+        if(outfile.is_open())
+        {
+            outfile << player_name_ << " " << score << std::endl;
+        }
+        else
+        {
+            std::cout << "Couldn't open file to save game results!" << std::endl;
+        }
+    }
+}
+
 void Game::PlaceFood() {
   int x, y;
   while (true) {
@@ -85,3 +166,4 @@ void Game::Update() {
 
 int Game::GetScore() const { return score; }
 int Game::GetSize() const { return snake.size; }
+
