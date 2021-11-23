@@ -31,7 +31,8 @@ bool parse_game_file(const std::string& filename, int& max_score, std::string& p
         std::cout << "Couldn't parse file" << std::endl;
         return false;
     }
-
+    max_score = tmp_score;
+    player = tmp_name;
     return true;
 }
 
@@ -65,10 +66,44 @@ void Game::SplashScreen(Controller const &controller, Renderer &renderer)
         std::cout << game_file_ << " doesn't exist, using defaults" << std::endl;
     }
 
-    // Render max score to date and get current player name
+    renderer.RenderSplashInit();
+    // Render max score to date and get current player's name
     std::string tmp_player{};
-    renderer.RenderSplash(max_score_, player_name_, tmp_player);
-    SDL_Delay(10000);
+    bool running{true};
+    SDL_StartTextInput();
+    while(running)
+    {
+        SDL_Event ev;
+        while(SDL_PollEvent(&ev))
+        {
+            switch(ev.type)
+            {
+                case SDL_TEXTINPUT:
+                    tmp_player += ev.text.text;
+                    break;
+                case SDL_KEYDOWN:
+                    switch(ev.key.keysym.sym)
+                    {
+                        case SDLK_BACKSPACE:
+                            if(tmp_player.size())
+                            {
+                                tmp_player.pop_back();
+                            }
+                            break;
+                        case SDLK_RETURN:
+                            running = false;
+                            break;
+                        default:
+                            break;
+                    }
+            }
+        }
+
+        renderer.RenderSplash(max_score_, player_name_, tmp_player);
+    }
+
+    SDL_StopTextInput();
+    player_name_ = tmp_player;
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,

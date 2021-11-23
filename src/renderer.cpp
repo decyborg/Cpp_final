@@ -1,6 +1,5 @@
 #include "renderer.h"
 #include <iostream>
-#include "SDL_ttf.h"
 #include <sstream>
 
 Renderer::Renderer(const std::size_t screen_width,
@@ -46,7 +45,7 @@ Renderer::~Renderer() {
 /// param[in] offset Offset at which to display the text
 /// param[in] color Color to display text
 /// returns last height at which text was displayed (to use for next offset)
-int RenderText(const char* str, TTF_Font* font, SDL_Renderer* renderer_, const int offset, const SDL_Color color)
+int RenderText(const char* str, TTF_Font* font, SDL_Renderer* renderer_, const int& offset, const SDL_Color& color)
 {
     SDL_Surface* text = TTF_RenderText_Solid(font, str, color);
     if(!text)
@@ -60,6 +59,21 @@ int RenderText(const char* str, TTF_Font* font, SDL_Renderer* renderer_, const i
     return text->h;
 }
 
+void Renderer::RenderSplashInit()
+{
+    if(TTF_Init() < 0)
+    {
+        std::cout << "Error initializing SDL TTF: " << TTF_GetError() << "\n";
+    }
+
+    // Load font
+	font = TTF_OpenFont("../support/font.ttf", 56);
+	if ( !font )
+    {
+        std::cout << "Error loading font: " << TTF_GetError() << "\n";
+	}
+}
+
 /// Render the splash screen name
 ///
 void Renderer::RenderSplash(const int& max_score, const std::string& player_max_score, const std::string& cur_player)
@@ -67,18 +81,6 @@ void Renderer::RenderSplash(const int& max_score, const std::string& player_max_
     // Clear screen
     SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
     SDL_RenderClear(sdl_renderer);
-
-    if(TTF_Init() < 0)
-    {
-        std::cout << "Error initializing SDL TTF: " << TTF_GetError() << "\n";
-    }
-
-    // Load font
-	TTF_Font *font = TTF_OpenFont("../support/font.ttf", 56);
-	if ( !font )
-    {
-        std::cout << "Error loading font: " << TTF_GetError() << "\n";
-	}
 
     // Set color to black
     SDL_Color color = { 0xFF, 0xFF, 0xFF };
@@ -95,6 +97,14 @@ void Renderer::RenderSplash(const int& max_score, const std::string& player_max_
 
     // Middle Section
     offset += RenderText("Insert your name:", font, sdl_renderer, offset, color);
+    if(cur_player.size())
+    {
+        offset += RenderText(cur_player.c_str(), font, sdl_renderer, offset, color);
+    }
+    else
+    {
+        offset += RenderText(" ", font, sdl_renderer, offset, color);
+    }
 
     // End section
     offset += RenderText("Press enter to continue", font, sdl_renderer, offset, color);

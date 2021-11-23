@@ -19,6 +19,7 @@ In this project, you can build your own C++ application or extend this Snake gam
   * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
   >Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
   * SDL TTF -> sudo apt install libsdl2-ttf-dev
+  * I also ran sudo apt-get install libsdl-ttf2.0-dev
 * gcc/g++ >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
@@ -30,6 +31,18 @@ In this project, you can build your own C++ application or extend this Snake gam
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./SnakeGame`.
+
+## Rubric points
+* The project demonstrates an understanding of C++ functions and control structures.
+    * [A function to parse the file is defined on line 16 of game.cpp](src/game.cpp)
+    * [A while loop/if and switch statements are used throughout game.cpp (line 75 for instance)](src/game.cpp)
+* The project reads data from a file and process the data, or the program writes data to a file.
+    * [Reads and saves game data on line 58 of game.cpp](src/game.cpp)
+* The project accepts user input and processes the input.
+    * [Capturing user input on line 77 of game.cpp](src/game.cpp)
+* The project makes use of references in function declarations.
+    * [parse\_game\_file on line 16 of game.cpp uses pass by reference](src/game.cpp)
+    * [RenderText on line 155 of renderer.cpp uses pass by reference](src/renderer.cpp)
 
 
 ## CC Attribution-ShareAlike 4.0 International
