@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 namespace
 {
@@ -38,12 +39,17 @@ bool parse_game_file(const std::string& filename, int& max_score, std::string& p
 
 } // Anonymous namespace
 
+constexpr int max_mult{10};
+
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
       engine(dev()),
       random_w(0, static_cast<int>(grid_width - 1)),
-      random_h(0, static_cast<int>(grid_height - 1)) {
+      random_h(0, static_cast<int>(grid_height - 1)),
+      bonus_food(grid_width, grid_height, max_mult)
+{
   PlaceFood();
+  bonus_food.Place(snake, food);
 }
 
 /// Displays an initial screen to select the name of player
@@ -121,7 +127,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake);
     Update();
-    renderer.Render(snake, food);
+    renderer.Render(snake, food, bonus_food);
 
     frame_end = SDL_GetTicks();
 
@@ -196,6 +202,33 @@ void Game::Update() {
     // Grow snake and increase speed.
     snake.GrowBody();
     snake.speed += 0.02;
+  }
+
+  // Update Bonus food
+  bonus_food.Update();
+
+  // Check if bonus_food is here
+  if(bonus_food.Collision(new_x, new_y))
+  {
+    food_state cur_state = bonus_food.get_state();
+    score += 1 * bonus_food.get_multiplier();
+    if(score < 0)
+    {
+        score = 0;
+    }
+
+    if(cur_state == food_state::bonus)
+    {
+        snake.GrowBody();
+        snake.speed += 0.02;
+    }
+    else
+    {
+        snake.speed -= 0.02;
+        snake.speed = std::max(snake.speed, 0.02f);
+    }
+
+    bonus_food.Place(snake, food);
   }
 }
 

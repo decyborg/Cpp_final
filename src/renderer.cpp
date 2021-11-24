@@ -34,6 +34,8 @@ Renderer::Renderer(const std::size_t screen_width,
 }
 
 Renderer::~Renderer() {
+  TTF_CloseFont(font);
+  TTF_Quit();
   SDL_DestroyWindow(sdl_window);
   SDL_Quit();
 }
@@ -112,7 +114,7 @@ void Renderer::RenderSplash(const int& max_score, const std::string& player_max_
     SDL_RenderPresent(sdl_renderer);
 }
 
-void Renderer::Render(Snake const snake, SDL_Point const &food) {
+void Renderer::Render(Snake const snake, SDL_Point const &food, BonusFood &bonus_food) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
   block.h = screen_height / grid_height;
@@ -126,6 +128,9 @@ void Renderer::Render(Snake const snake, SDL_Point const &food) {
   block.x = food.x * block.w;
   block.y = food.y * block.h;
   SDL_RenderFillRect(sdl_renderer, &block);
+
+  // Render Bonus Food
+  bonus_food.Render(sdl_renderer, block);
 
   // Render snake's body
   SDL_SetRenderDrawColor(sdl_renderer, 0xFF, 0xFF, 0xFF, 0xFF);

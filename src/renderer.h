@@ -4,6 +4,7 @@
 #include <vector>
 #include "SDL.h"
 #include "snake.h"
+#include "bonus_food.h"
 #include <string>
 #include "SDL_ttf.h"
 
@@ -13,7 +14,7 @@ class Renderer {
            const std::size_t grid_width, const std::size_t grid_height);
   ~Renderer();
 
-  void Render(Snake const snake, SDL_Point const &food);
+  void Render(Snake const snake, SDL_Point const &food, BonusFood &bonus_food);
   void RenderSplashInit();
   void RenderSplash(const int& max_score,
                     const std::string& player_max_score,

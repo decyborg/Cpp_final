@@ -6,6 +6,7 @@
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
+#include "bonus_food.h"
 
 #include <string>
 
@@ -21,6 +22,7 @@ class Game {
 
  private:
   Snake snake;
+  BonusFood bonus_food;
   SDL_Point food;
 
   std::random_device dev;
