@@ -43,7 +43,18 @@ In this project, you can build your own C++ application or extend this Snake gam
 * The project makes use of references in function declarations.
     * [parse\_game\_file on line 16 of game.cpp uses pass by reference](src/game.cpp)
     * [RenderText on line 155 of renderer.cpp uses pass by reference](src/renderer.cpp)
-
+* The project uses Object Oriented Programming techniques.
+    * [BonusFood class is created from abstract class GameObject](src/bonus_food.h)
+* Classes use appropriate access specifiers for class members.
+    * [BonusFood members/methods are specified as either private or public](src/bonus_food.h)
+* Class constructors utilize member initialization lists.
+    * [BonusFood constructor utilizes list initialization on line 4](src/bonus_food.cpp)
+* Classes abstract implementation details from their interfaces.
+    * [Class member functions document their effects at the header file](src/bonus_food.h)
+* Classes follow an appropriate inheritance hierarchy.
+    * [Composition is used to create BonusFood class from abstract class game\_object](src/game_object.h)
+* Derived class functions override virtual base class functions.
+    * [Member functions (Render line 62 and Update line 105) of BonusFood override virtual base class methods](src/bonus_food.h)
 
 ## CC Attribution-ShareAlike 4.0 International
 
