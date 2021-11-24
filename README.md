@@ -20,7 +20,10 @@ In this project, you can build your own C++ application or extend this Snake gam
   >Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source.
   * SDL TTF -> sudo apt install libsdl2-ttf-dev
   * I also ran sudo apt-get install libsdl-ttf2.0-dev
-* gcc/g++ >= 5.4
+* gcc/g++ >= 9.0
+  * Due to the use of <filesystem> gcc 9.0 is required, you can get it by doing
+    > `sudo apt install gcc-9`
+    > `sudo apt install g++-9`
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
@@ -30,6 +33,7 @@ In this project, you can build your own C++ application or extend this Snake gam
 1. Clone this repo.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
+3.1 If running on Ubuntu 16.04 please install gcc-9 g++-9 and do `CXX=g++-9 CC=gcc-9 cmake ..`
 4. Run it: `./SnakeGame`.
 
 ## Rubric points
